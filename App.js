@@ -1,13 +1,9 @@
 import React from 'react';
-import {SafeAreaView, Text, StatusBar} from 'react-native';
+
+import { Init } from './src/init';
 
 const App = () => {
-  return (
-    <SafeAreaView>
-		<StatusBar />
-		<Text>Hii</Text>
-    </SafeAreaView>
-  );
+  return <Init />;
 };
 
 export default App;
