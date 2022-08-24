@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { Text, View, TextInput as RNTextInput, StyleSheet, ScrollView, Pressable } from 'react-native';
+import React from 'react';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 import { TextInput } from '../../components';
 import { RadioElement } from '../../components/Radio';
+import {flashMessage} from '../../lib/flash-message';
 
 type InputTypes = 'firstName' | 'lastName' | 'email' | 'dob' | 'phone' | 'streetAddress' | 'apartmentNumber' | 'zipCode' | 'state' | 'idNumber' | 'idState';
 type RadioInput = 'driverLicense' | 'nonDriver' | 'USMilitary' | 'USPassport';
@@ -32,7 +33,7 @@ export const LoansTabScreen = () => {
 			case 'email':
 				return setEmail(newText);
 			case 'dob':
-				return setDob(text);
+				return setDob(newText);
 			case 'phone':
 				return setPhone(newText);
 			case 'streetAddress':
@@ -42,13 +43,43 @@ export const LoansTabScreen = () => {
 			case 'zipCode':
 				return setZipCode(newText);
 			case 'state':
-				return setState(text);
+				return setState(newText);
 			case 'idNumber':
 				return setIdNumber(newText);
 			case 'idState':
 				return setIdState(newText);
 		}
 	};
+
+	const canSubmit = () => {
+		return firstName && lastName && email && dob && phone && streetAddress && apartmentNumber && zipCode && state && idNumber && idState;
+	}
+
+	const validateEmail = (email: string) => {
+		return String(email)
+			.toLowerCase()
+			.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+	};
+
+	const handleSubmit = () => {
+		const phoneInt = parseInt(phone, 10);
+		const apartmentNumberInt = parseInt(apartmentNumber, 10);
+		const idNumberInt = parseInt(idNumber, 10);
+
+		// showing one error at a time
+		if(!validateEmail(email)) {
+			flashMessage.error('Type a valid email format!');
+		} else if(!phoneInt) {
+			flashMessage.error('Type a number in phone field!');
+		} else if (phone.length !== 10) {
+			flashMessage.error('Type 10 numbers in phone field!');
+		} else if(!apartmentNumberInt) {
+			flashMessage.error('Type a number in Apartment Number field!');
+		}
+		// TODO: validate DOB
+
+		// TODO: save in redux and show that data in home tab.
+	}
 
 	return (
 		<ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -95,7 +126,9 @@ export const LoansTabScreen = () => {
 			</View>
 
 			<View style={{marginBottom: 40}}>
-				<Pressable />
+				<TouchableOpacity style={[styles.submit, !canSubmit() && {backgroundColor: 'grey'}]} onPress={handleSubmit} disabled={!canSubmit()}>
+					<Text style={styles.submitText}>Submit</Text>
+				</TouchableOpacity>
 			</View>
 		</ScrollView>
 	);
@@ -128,5 +161,20 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
+	},
+	submit: {
+		width: '100%',
+		backgroundColor: '#1a75ff',
+		flex: 1,
+		alignItems: 'center',
+		paddingVertical: 15,
+		marginTop: 20,
+		borderRadius: 20
+
+	},
+	submitText: {
+		color: 'white',
+		fontSize: 20,
+		fontWeight: '700'
 	}
 })
