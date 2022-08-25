@@ -24,7 +24,6 @@ export const LoansTabScreen = () => {
 	const [idState, setIdState] = React.useState('');
 	const [radioState, setRadioState] = React.useState<RadioInput>('driverLicense');
 
-	const count = useSelector((state: any) => state.appliedLoan.phone);
 	const dispatch = useDispatch();
 
 	const handleInput = (type: InputTypes, text: string) => {
@@ -60,11 +59,30 @@ export const LoansTabScreen = () => {
 		return firstName && lastName && email && dob && phone && streetAddress && apartmentNumber && zipCode && state && idNumber && idState;
 	}
 
-	const validateEmail = (email: string) => {
-		return String(email)
+	const validateEmail = (em: string) => {
+		return String(em)
 			.toLowerCase()
 			.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 	};
+
+	const validateDOB = (date: string) => {
+		return String(date).match(/^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/);
+	}
+
+	const resetState = () => {
+		setFirstName('');
+		setLastName('');
+		setEmail('');
+		setDob('');
+		setPhone('');
+		setStreetAddress('');
+		setApartmentNumber('');
+		setZipCode('');
+		setState('');
+		setIdNumber('');
+		setIdState('');
+		setRadioState('driverLicense');
+	}
 
 	const handleSubmit = () => {
 		const phoneInt = parseInt(phone, 10);
@@ -77,6 +95,8 @@ export const LoansTabScreen = () => {
 			flashMessage.error('Type a number in phone field!');
 		} else if (phone.length !== 10) {
 			flashMessage.error('Type 10 numbers in phone field!');
+		} else if (!validateDOB(dob)) {
+			flashMessage.error('Type a valid DOB in dd/MM/YYYY format!');
 		} else if(!apartmentNumberInt) {
 			flashMessage.error('Type a number in Apartment Number field!');
 		} else {
@@ -89,9 +109,10 @@ export const LoansTabScreen = () => {
 					idState
 				}
 			}
+			flashMessage.success('Loan Applied!');
 			dispatch(save(payload));
+			resetState();
 		}
-		// TODO: validate DOB
 	}
 
 	return (
