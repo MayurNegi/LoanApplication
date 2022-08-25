@@ -36,7 +36,7 @@ export const appliedLoanSlice = createSlice({
   name: 'appliedLoan',
   initialState,
   reducers: {
-    save: (state: LoanState, action) => {
+    save: (state: LoanState, action: PayloadAction) => {
 		return [...state, action.payload];
     },
   },

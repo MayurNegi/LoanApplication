@@ -69,7 +69,6 @@ export const LoansTabScreen = () => {
 	const handleSubmit = () => {
 		const phoneInt = parseInt(phone, 10);
 		const apartmentNumberInt = parseInt(apartmentNumber, 10);
-		const idNumberInt = parseInt(idNumber, 10);
 
 		// showing one error at a time
 		if(!validateEmail(email)) {
@@ -80,19 +79,19 @@ export const LoansTabScreen = () => {
 			flashMessage.error('Type 10 numbers in phone field!');
 		} else if(!apartmentNumberInt) {
 			flashMessage.error('Type a number in Apartment Number field!');
+		} else {
+			const payload = {
+				personalDetails : {firstName, lastName, email, dob, phone},
+				address: {streetAddress, apartmentNumber, zipCode, state},
+				identification: {
+					residentialProof: radioState,
+					idNumber,
+					idState
+				}
+			}
+			dispatch(save(payload));
 		}
 		// TODO: validate DOB
-
-		const payload = {
-			personalDetails : {firstName, lastName, email, dob, phone},
-			address: {streetAddress, apartmentNumber, zipCode, state},
-			identification: {
-				residentialProof: radioState,
-				idNumber,
-				idState
-			}
-		}
-		dispatch(save(payload));
 	}
 
 	return (
@@ -140,7 +139,7 @@ export const LoansTabScreen = () => {
 			</View>
 
 			<View style={{marginBottom: 40}}>
-				<TouchableOpacity style={[styles.submit, !canSubmit() && {backgroundColor: 'grey'}]} onPress={handleSubmit} >
+				<TouchableOpacity style={[styles.submit, !canSubmit() && {backgroundColor: 'grey'}]} onPress={handleSubmit} disabled={!canSubmit()} >
 					<Text style={styles.submitText}>Submit</Text>
 				</TouchableOpacity>
 			</View>

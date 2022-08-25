@@ -1,4 +1,4 @@
-import {showMessage, hideMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 
 export const flashMessage = {
   success: (msg: string) => {
