@@ -1,12 +1,14 @@
 import React from 'react';
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 
+import {save} from './appliedLoanSlice';
 import { TextInput } from '../../components';
 import { RadioElement } from '../../components/Radio';
 import {flashMessage} from '../../lib/flash-message';
 
 type InputTypes = 'firstName' | 'lastName' | 'email' | 'dob' | 'phone' | 'streetAddress' | 'apartmentNumber' | 'zipCode' | 'state' | 'idNumber' | 'idState';
-type RadioInput = 'driverLicense' | 'nonDriver' | 'USMilitary' | 'USPassport';
+export type RadioInput = 'driverLicense' | 'nonDriver' | 'USMilitary' | 'USPassport';
 
 export const LoansTabScreen = () => {
 	const [firstName, setFirstName] = React.useState('');
@@ -21,6 +23,9 @@ export const LoansTabScreen = () => {
 	const [idNumber, setIdNumber] = React.useState('');
 	const [idState, setIdState] = React.useState('');
 	const [radioState, setRadioState] = React.useState<RadioInput>('driverLicense');
+
+	const count = useSelector((state: any) => state.appliedLoan.phone);
+	const dispatch = useDispatch();
 
 	const handleInput = (type: InputTypes, text: string) => {
 		let newText = text.trim();
@@ -78,7 +83,16 @@ export const LoansTabScreen = () => {
 		}
 		// TODO: validate DOB
 
-		// TODO: save in redux and show that data in home tab.
+		const payload = {
+			personalDetails : {firstName, lastName, email, dob, phone},
+			address: {streetAddress, apartmentNumber, zipCode, state},
+			identification: {
+				residentialProof: radioState,
+				idNumber,
+				idState
+			}
+		}
+		dispatch(save(payload));
 	}
 
 	return (
@@ -126,7 +140,7 @@ export const LoansTabScreen = () => {
 			</View>
 
 			<View style={{marginBottom: 40}}>
-				<TouchableOpacity style={[styles.submit, !canSubmit() && {backgroundColor: 'grey'}]} onPress={handleSubmit} disabled={!canSubmit()}>
+				<TouchableOpacity style={[styles.submit, !canSubmit() && {backgroundColor: 'grey'}]} onPress={handleSubmit} >
 					<Text style={styles.submitText}>Submit</Text>
 				</TouchableOpacity>
 			</View>
